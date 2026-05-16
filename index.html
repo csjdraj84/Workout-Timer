@@ -335,6 +335,28 @@
             font-size: 32px;
             background-color: #18181b;
             border: 1px solid #3f3f46;
+            cursor: pointer;
+            transition: background-color 0.15s, border-color 0.15s, transform 0.1s;
+        }
+
+        .small-btn:hover {
+            background-color: #2d2d30;
+            border-color: #71717a;
+        }
+
+        .small-btn:active {
+            transform: scale(0.93);
+        }
+
+        .skip-btn {
+            background-color: #1a1a2e;
+            border: 1px solid #10b98155;
+            color: #10b981;
+        }
+
+        .skip-btn:hover {
+            background-color: #10b98120;
+            border-color: #10b981;
         }
 
         /* MODALS */
@@ -584,7 +606,9 @@
 
                 <!-- Controls -->
                 <div class="timer-controls">
+                    <button onclick="skipBack()" id="skip-back-btn" class="small-btn skip-btn" title="Previous interval">⏮</button>
                     <button onclick="togglePlayPause()" id="play-pause-btn" class="big-btn btn-primary">▶️</button>
+                    <button onclick="skipForward()" id="skip-fwd-btn" class="small-btn skip-btn" title="Next interval">⏭</button>
                     <button onclick="stopWorkout()" class="small-btn">⏹️</button>
                     <button onclick="resetTimer()" class="small-btn">🔄</button>
                 </div>
@@ -1039,6 +1063,83 @@
             timerState.phaseRemaining = currentConfig.workTime
             updateTimerUI()
         }
+
+        // ---- Skip helpers ----
+        // Build a flat ordered list of all phases with their durations
+        function buildPhaseSequence() {
+            const cfg = currentConfig
+            const seq = []
+            for (let t = 0; t < cfg.numTypes; t++) {
+                for (let r = 0; r < cfg.numRepsPerType; r++) {
+                    seq.push({ phase: 'work', typeIdx: t, repIdx: r, duration: cfg.workTime })
+                    const isLast = (t === cfg.numTypes - 1) && (r === cfg.numRepsPerType - 1)
+                    if (!isLast) {
+                        seq.push({ phase: 'rest', typeIdx: t, repIdx: r, duration: cfg.restTime || 0 })
+                    }
+                }
+            }
+            return seq
+        }
+
+        // Find the index of the current phase in the sequence
+        function currentPhaseIndex(seq) {
+            return seq.findIndex(p =>
+                p.phase === timerState.currentPhase &&
+                p.typeIdx === timerState.currentTypeIdx &&
+                p.repIdx === timerState.currentRepIdx
+            )
+        }
+
+        // How many seconds elapsed BEFORE the current phase started
+        function elapsedBeforeCurrentPhase(seq, idx) {
+            let secs = 0
+            for (let i = 0; i < idx; i++) secs += seq[i].duration
+            return secs
+        }
+
+        // Jump to a phase by index, restore elapsed seconds to the start of that phase
+        function jumpToPhase(seq, idx) {
+            if (idx < 0 || idx >= seq.length) return
+            const target = seq[idx]
+            const wasRunning = timerState.isRunning
+            pauseTimer()
+            timerState.currentTypeIdx = target.typeIdx
+            timerState.currentRepIdx  = target.repIdx
+            timerState.currentPhase   = target.phase
+            timerState.phaseRemaining = target.duration
+            timerState.elapsedSeconds = elapsedBeforeCurrentPhase(seq, idx)
+            updateTimerUI()
+            if (wasRunning) startTimer()
+        }
+
+        function skipBack() {
+            const seq = buildPhaseSequence()
+            const idx = currentPhaseIndex(seq)
+            if (idx < 0) return
+            const currentPhaseDuration = seq[idx].duration
+            const timeIntoPhase = currentPhaseDuration - timerState.phaseRemaining
+            // If we are more than 3 s into the current phase, restart it; otherwise go to previous
+            if (timeIntoPhase > 3 && idx > 0) {
+                jumpToPhase(seq, idx)   // restart current
+            } else if (idx > 0) {
+                jumpToPhase(seq, idx - 1)
+            } else {
+                jumpToPhase(seq, 0)     // already at start – just restart
+            }
+        }
+
+        function skipForward() {
+            const seq = buildPhaseSequence()
+            const idx = currentPhaseIndex(seq)
+            if (idx < 0) return
+            if (idx < seq.length - 1) {
+                jumpToPhase(seq, idx + 1)
+            } else {
+                // Already at the last phase – end the workout
+                endWorkout()
+            }
+        }
+        // ---- End skip helpers ----
 
         function stopWorkout() {
             pauseTimer()
