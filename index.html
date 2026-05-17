@@ -1,1211 +1,417 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Workout Timer</title>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=Space+Grotesk:wght@500&amp;display=swap');
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Workout Timer</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500&display=swap');
 
-        :root {
-            --primary: #10b981;
-        }
+    :root{
+      --bg: #18181b;
+      --card: #27272a;
+      --muted: #a1a1aa;
+      --border: #3f3f46;
+      --primary: #10b981;
+      --accent: #0ea5e9;
+      --glass: rgba(255,255,255,0.03);
+      --pad-sm: 12px;
+      --pad-md: 20px;
+      --pad-lg: 32px;
+    }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+    *{box-sizing:border-box;margin:0;padding:0}
+    html,body{height:100%}
+    body{
+      background:var(--bg);
+      color:#fff;
+      font-family: 'Inter', system-ui, sans-serif;
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
+      line-height:1.4;
+      padding-bottom:32px;
+    }
 
-        body {
-            background-color: #18181b;
-            color: #ffffff;
-            font-family: 'Inter', system_ui, sans-serif;
-            min-height: 100vh;
-            padding-bottom: 32px;
-            line-height: 1.5;
-        }
+    .header-font{font-family: 'Space Grotesk', sans-serif}
+    .digital{font-variant-numeric:tabular-nums}
 
-        .header-font {
-            font-family: 'Space Grotesk', sans-serif;
-        }
+    .container{max-width:1100px;margin:0 auto;padding:0 16px}
 
-        .digital {
-            font-variant-numeric: tabular-nums;
-        }
+    header{border-bottom:1px solid var(--border);padding:18px 0}
+    .header-content{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
 
-        .container {
-            max-width: 1280px;
-            margin-left: auto;
-            margin-right: auto;
-            padding-left: 16px;
-            padding-right: 16px;
-        }
+    .logo{display:flex;align-items:center;gap:10px}
+    .logo-circle{width:40px;height:40px;border-radius:10px;background:var(--primary);display:flex;align-items:center;justify-content:center;font-size:22px;box-shadow:0 6px 18px rgba(16,185,129,0.22)}
+    .site-title{font-size:18px}
 
-        /* HEADER */
-        header {
-            border-bottom: 1px solid #3f3f46;
-            padding: 24px 0;
-        }
+    .status-pill{display:inline-flex;align-items:center;gap:8px;background:var(--bg);color:var(--primary);padding:6px 14px;border-radius:9999px;border:1px solid rgba(16,185,129,0.15);font-size:12px;font-weight:600}
+    .about-link{color:var(--muted);display:flex;align-items:center;gap:6px;font-size:14px;cursor:pointer}
 
-        .header-content {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
+    /* Layout */
+    .main-grid{display:grid;grid-template-columns:1fr;gap:20px;margin-top:20px}
+    @media(min-width:880px){.main-grid{grid-template-columns:7fr 5fr;gap:28px}}
 
-        .logo {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
+    .card{background:var(--card);border-radius:18px;border:1px solid var(--border);padding:var(--pad-lg);box-shadow:0 20px 40px -12px rgba(0,0,0,0.45)}
+    @media(max-width:420px){.card{padding:18px;border-radius:14px}}
 
-        .logo-circle {
-            width: 40px;
-            height: 40px;
-            background-color: #10b981;
-            border-radius: 16px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 28px;
-            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
-        }
+    .form-label{display:block;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:0.6px;color:var(--muted);margin-bottom:8px}
 
-        /* SETUP SCREEN */
-        #setup-screen {
-            display: block;
-            animation: fadeIn 0.4s ease forwards;
-        }
+    .input-wrapper{background:var(--bg);border:1px solid var(--border);border-radius:12px;padding:10px 14px;display:flex;align-items:center;gap:10px}
+    .input-wrapper input{background:transparent;border:none;outline:none;color:#fff;font-weight:600}
+    .input-small{font-size:20px}
+    .input-large{font-size:28px}
 
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
+    .types-grid{display:grid;grid-template-columns:1fr;gap:10px;max-height:36vh;overflow-y:auto;padding-right:6px}
+    @media(min-width:480px){.types-grid{grid-template-columns:repeat(2,1fr)}}
+    @media(min-width:640px){.types-grid{grid-template-columns:repeat(3,1fr);max-height:260px}}
 
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.4; }
-        }
+    .type-item{background:var(--bg);border:1px solid var(--border);border-radius:12px;padding:10px;display:flex;align-items:center;gap:8px}
+    .type-item input{font-size:15px}
 
-        .main-grid {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 32px;
-            margin-top: 32px;
-        }
+    .total-time-box{background:var(--bg);border:2px dashed rgba(16,185,129,0.2);border-radius:14px;padding:14px;display:flex;align-items:center;justify-content:space-between}
+    .total-time-box .left{display:flex;align-items:center;gap:12px}
 
-        @media (min-width: 1024px) {
-            .main-grid {
-                grid-template-columns: 7fr 5fr;
-            }
-        }
+    .btn{height:48px;border-radius:9999px;font-weight:700;font-size:15px;display:inline-flex;align-items:center;justify-content:center;gap:8px;cursor:pointer;border:none;outline:none;padding:0 18px}
+    .btn-primary{background:var(--primary);color:#fff;box-shadow:0 10px 20px -8px rgba(16,185,129,0.6)}
+    .btn-secondary{background:transparent;border:1.5px solid rgba(209,213,219,0.06);color:#fff}
+    .btn-save{background:#fff;color:var(--bg)}
 
-        .card {
-            background-color: #27272a;
-            border-radius: 24px;
-            border: 1px solid #3f3f46;
-            padding: 32px;
-            box-shadow: 0 25px 50px -12px rgb(0 0 0 / 0.25);
-        }
+    .actions-row{display:flex;flex-wrap:wrap;gap:10px}
+    .actions-row .btn{flex:1;min-width:120px}
+    @media(max-width:460px){.actions-row .btn{min-width:0;padding:12px}}
 
-        .form-label {
-            display: block;
-            font-size: 13px;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            color: #a1a1aa;
-            margin-bottom: 8px;
-        }
+    /* Saved list */
+    .saved-list{max-height:42vh;overflow:auto}
+    .saved-item{background:var(--bg);border-radius:10px;padding:12px;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center;cursor:pointer}
 
-        .input-wrapper {
-            background-color: #18181b;
-            border: 1px solid #3f3f46;
-            border-radius: 16px;
-            padding: 16px 20px;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
+    /* TIMER SCREEN */
+    #timer-screen{display:none;flex-direction:column;height:calc(100vh - 88px)}
+    .timer-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;padding:0 8px;gap:12px;flex-wrap:wrap}
+    .timer-header .center{flex:1;text-align:center}
 
-        .input-wrapper input {
-            background: transparent;
-            border: none;
-            outline: none;
-            flex: 1;
-            font-size: 28px;
-            font-weight: 600;
-            color: #ffffff;
-            width: 100%;
-        }
+    .timer-display{flex:1;background:var(--card);border-radius:18px;padding:36px;display:flex;flex-direction:column;align-items:center;justify-content:center;position:relative;box-shadow:inset 0 8px 30px rgba(0,0,0,0.35)}
+    @media(max-width:420px){.timer-display{padding:18px}}
 
-        .input-wrapper span {
-            color: #a1a1aa;
-            font-size: 14px;
-            white-space: nowrap;
-        }
+    .phase-label{font-size:16px;font-weight:700;text-transform:uppercase;letter-spacing:2px;margin-bottom:14px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
 
-        .types-grid {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 12px;
-            max-height: 260px;
-            overflow-y: auto;
-            padding-right: 8px;
-        }
+    /* Responsive scaling for big countdown */
+    .phase-time{
+      font-weight:700;line-height:1;color:var(--primary);
+      font-size: clamp(48px, 12vw, 128px);
+      margin-bottom:18px;text-align:center;word-break:keep-all}
 
-        @media (min-width: 640px) {
-            .types-grid {
-                grid-template-columns: repeat(3, 1fr);
-            }
-        }
+    .progress-info{width:100%;max-width:520px;display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-bottom:18px;text-align:center}
+    @media(max-width:540px){.progress-info{grid-template-columns:1fr;gap:12px}}
 
-        .type-item {
-            background-color: #18181b;
-            border: 1px solid #3f3f46;
-            border-radius: 16px;
-            padding: 16px;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
+    .progress-bar-container{width:100%;max-width:520px;margin-bottom:18px}
+    .progress-bar{height:12px;background:var(--border);border-radius:9999px;overflow:hidden}
+    .progress-bar-fill{height:100%;background:linear-gradient(90deg,var(--primary),#0ea5e9);width:0%;transition:width 0.35s ease}
 
-        .total-time-box {
-            background-color: #18181b;
-            border: 2px dashed #10b98133;
-            border-radius: 24px;
-            padding: 24px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
+    .timer-controls{display:flex;align-items:center;justify-content:center;gap:14px;flex-wrap:wrap}
 
-        .btn {
-            height: 56px;
-            border-radius: 9999px;
-            font-weight: 600;
-            font-size: 18px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            cursor: pointer;
-            border: none;
-            outline: none;
-        }
+    .big-btn{width:88px;height:88px;border-radius:9999px;display:flex;align-items:center;justify-content:center;font-size:42px;box-shadow:0 18px 30px -8px rgba(16,185,129,0.35)}
+    .small-btn{width:60px;height:60px;border-radius:9999px;display:flex;align-items:center;justify-content:center;font-size:22px;background:var(--bg);border:1px solid var(--border);cursor:pointer}
 
-        .btn-primary {
-            background-color: #10b981;
-            color: #ffffff;
-            box-shadow: 0 10px 15px -3px rgb(16 185 129);
-        }
+    @media(max-width:420px){
+      .big-btn{width:72px;height:72px;font-size:34px}
+      .small-btn{width:56px;height:56px;font-size:20px}
+      .phase-label{font-size:14px}
+      .phase-time{margin-bottom:12px}
+    }
 
-        .btn-secondary {
-            background-color: transparent;
-            border: 2px solid #d1d5db;
-            color: #ffffff;
-        }
+    /* Floating info */
+    .floating-info{position:absolute;bottom:18px;right:18px;font-size:11px;background:rgba(0,0,0,0.45);padding:6px 12px;border-radius:9999px;display:flex;align-items:center;gap:8px;color:var(--primary)}
+    @media(max-width:420px){.floating-info{bottom:12px;right:12px;font-size:10px;padding:6px 10px}}
 
-        .btn-save {
-            background-color: #ffffff;
-            color: #18181b;
-        }
+    /* Modals */
+    .modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.85);align-items:center;justify-content:center;z-index:9999;padding:24px}
+    .modal-content{background:var(--card);border-radius:16px;max-width:520px;width:100%;padding:24px}
+    @media(max-width:420px){.modal-content{padding:16px;border-radius:12px}}
 
-        /* SAVED WORKOUTS */
-        .saved-list {
-            max-height: 420px;
-            overflow-y: auto;
-        }
+    /* Scrollbar styling */
+    .types-grid::-webkit-scrollbar,.saved-list::-webkit-scrollbar{width:6px}
+    .types-grid::-webkit-scrollbar-thumb,.saved-list::-webkit-scrollbar-thumb{background:var(--primary);border-radius:9999px}
 
-        .saved-item {
-            background-color: #18181b;
-            border-radius: 16px;
-            padding: 16px;
-            margin-bottom: 12px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            cursor: pointer;
-        }
+    /* Utility */
+    .hidden-sm{display:none}
+    @media(min-width:640px){.hidden-sm{display:inline-block}}
 
-        /* TIMER SCREEN */
-        #timer-screen {
-            display: none;
-            flex-direction: column;
-            height: calc(100vh - 88px);
-            animation: fadeIn 0.4s ease forwards;
-        }
-
-        .timer-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 16px;
-            padding: 0 8px;
-        }
-
-        .timer-display {
-            flex: 1;
-            background-color: #27272a;
-            border-radius: 24px;
-            padding: 40px 32px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            position: relative;
-            box-shadow: inset 0 10px 30px rgba(0, 0, 0, 0.3);
-        }
-
-        .phase-label {
-            font-size: 28px;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 3px;
-            margin-bottom: 24px;
-            display: flex;
-            align-items: center;
-            gap: 16px;
-        }
-
-        .phase-time {
-            font-size: 128px;
-            line-height: 1;
-            font-weight: 600;
-            margin-bottom: 32px;
-            color: #10b981;
-        }
-
-        .progress-info {
-            width: 100%;
-            max-width: 420px;
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 32px;
-            margin-bottom: 32px;
-            text-align: center;
-        }
-
-        .progress-bar-container {
-            width: 100%;
-            max-width: 420px;
-            margin-bottom: 32px;
-        }
-
-        .progress-bar {
-            height: 12px;
-            background-color: #3f3f46;
-            border-radius: 9999px;
-            overflow: hidden;
-        }
-
-        .progress-bar-fill {
-            height: 100%;
-            background: linear-gradient(to right, #10b981, #0ea5e9);
-            width: 0%;
-            transition: width 0.3s ease;
-        }
-
-        .timer-controls {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 24px;
-        }
-
-        .big-btn {
-            width: 96px;
-            height: 96px;
-            border-radius: 9999px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 48px;
-            box-shadow: 0 20px 25px -5px rgb(16 185 129 / 0.4);
-        }
-
-        .small-btn {
-            width: 64px;
-            height: 64px;
-            border-radius: 9999px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 32px;
-            background-color: #18181b;
-            border: 1px solid #3f3f46;
-            cursor: pointer;
-            transition: background-color 0.15s, border-color 0.15s, transform 0.1s;
-        }
-
-        .small-btn:hover {
-            background-color: #2d2d30;
-            border-color: #71717a;
-        }
-
-        .small-btn:active {
-            transform: scale(0.93);
-        }
-
-        .skip-btn {
-            background-color: #1a1a2e;
-            border: 1px solid #10b98155;
-            color: #10b981;
-        }
-
-        .skip-btn:hover {
-            background-color: #10b98120;
-            border-color: #10b981;
-        }
-
-        /* MODALS */
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.85);
-            align-items: center;
-            justify-content: center;
-            z-index: 9999;
-        }
-
-        .modal-content {
-            background-color: #27272a;
-            border-radius: 24px;
-            max-width: 380px;
-            width: 90%;
-            padding: 32px;
-            text-align: center;
-        }
-
-        /* RESPONSIVE */
-        @media (max-width: 640px) {
-            .phase-time {
-                font-size: 96px;
-            }
-            .timer-display {
-                padding: 24px 16px;
-            }
-        }
-
-        @media (min-width: 640px) {
-            .hidden-sm {
-                display: inline !important;
-            }
-        }
-
-        /* SCROLLBAR */
-        .types-grid::-webkit-scrollbar,
-        .saved-list::-webkit-scrollbar {
-            width: 6px;
-        }
-        .types-grid::-webkit-scrollbar-thumb,
-        .saved-list::-webkit-scrollbar-thumb {
-            background-color: #10b981;
-            border-radius: 9999px;
-        }
-    </style>
+    /* Accessible focus styles */
+    button:focus, input:focus{outline:3px solid rgba(16,185,129,0.15);outline-offset:2px}
+  </style>
 </head>
 <body>
 
-    <!-- HEADER -->
-    <header>
-        <div class="container header-content">
-            <div class="logo">
-                <div class="logo-circle">⏱️</div>
-                <h1 class="header-font" style="font-size: 28px; letter-spacing: -1px;">Workout Timer</h1>
-            </div>
-            
-            <div style="display: flex; align-items: center; gap: 8px; background-color: #18181b; color: #10b981; padding: 8px 20px; border-radius: 9999px; border: 1px solid #10b98133; font-size: 13px; font-weight: 600;">
-                <div style="width: 8px; height: 8px; background-color: #10b981; border-radius: 50%; animation: pulse 2s infinite;"></div>
-                READY TO SWEAT
-            </div>
-
-            <div onclick="showAbout()" style="color: #a1a1aa; display: flex; align-items: center; gap: 6px; font-size: 15px; cursor: pointer;">
-                ℹ️ <span style="display: none;" class="hidden-sm">How it works</span>
-            </div>
+  <header>
+    <div class="container header-content">
+      <div class="logo">
+        <div class="logo-circle">⏱️</div>
+        <div>
+          <div class="site-title header-font">Workout Timer</div>
+          <div style="font-size:11px;color:var(--muted);">Customize & run quick circuits</div>
         </div>
-    </header>
+      </div>
 
-    <div class="container">
-
-        <!-- SETUP SCREEN -->
-        <div id="setup-screen">
-
-            <div class="main-grid">
-
-                <!-- CONFIG FORM -->
-                <div class="card">
-                    <h2 style="font-size: 24px; font-weight: 600; margin-bottom: 24px;">Configure Your Workout</h2>
-
-                    <div style="display: flex; flex-direction: column; gap: 28px;">
-
-                        <!-- Workout Name -->
-                        <div>
-                            <label class="form-label">WORKOUT NAME</label>
-                            <div class="input-wrapper">
-                                <input id="workout-name" type="text" value="Morning Circuit" style="font-size: 22px;">
-                            </div>
-                        </div>
-
-                        <!-- Numbers -->
-                     
-                            <div>
-                                <label class="form-label">NUMBER OF WORKOUT TYPES</label>
-                                <div class="input-wrapper">
-                                    <input id="num-types" type="number" value="7" min="1" max="12" oninput="updateTypesList()" style="font-size: 28px;">
-                                    <span>types / exercises</span>
-                                </div>
-                            </div>
-                            <div>
-                                <label class="form-label">REPETITIONS PER WORKOUT TYPE</label>
-                                <div class="input-wrapper">
-                                    <input id="num-reps" type="number" value="3" min="1" max="20" oninput="updateTotalTime()" style="font-size: 28px;">
-                                    <span>reps</span>
-                                </div>
-                            </div>
-                        
-
-                        <!-- Workout Types -->
-                        <div>
-                            <label class="form-label">WORKOUT TYPE NAMES (EDITABLE)</label>
-                            <div id="types-list" class="types-grid">
-                                <!-- Populated by JS -->
-                            </div>
-                        </div>
-
-                        <!-- Times -->
-                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px;">
-                            <div>
-                                <label class="form-label">TIME PER WORKOUT (seconds)</label>
-                                <div class="input-wrapper">
-                                    <input id="work-time" type="number" value="36" min="10" step="5" oninput="updateTotalTime()" style="font-size: 28px;">
-                                    <span style="color: #10b981; font-weight: 600;">WORK</span>
-                                </div>
-                            </div>
-                            <div>
-                                <label class="form-label">REST TIME (seconds)</label>
-                                <div class="input-wrapper">
-                                    <input id="rest-time" type="number" value="30" min="0" step="5" oninput="updateTotalTime()" style="font-size: 28px;">
-                                    <span style="color: #0ea5e9; font-weight: 600;">REST</span>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Total Time -->
-                        <div class="total-time-box">
-                            <div style="display: flex; align-items: center; gap: 16px;">
-                                <div style="font-size: 42px;">⏳</div>
-                                <div>
-                                    <p style="font-size: 13px; text-transform: uppercase; color: #a1a1aa; letter-spacing: 1px;">Total workout time</p>
-                                    <p id="total-time-display" class="digital" style="font-size: 42px; font-weight: 600;">12:45</p>
-                                </div>
-                            </div>
-                            <div style="text-align: right;">
-                                <div onclick="calloutDemo()" style="cursor: pointer; display: inline-flex; align-items: center; gap: 6px; background-color: #052e16; color: #10b981; padding: 6px 16px; border-radius: 9999px; font-size: 13px;">
-                                    🔊 Last 5 seconds callout enabled (work + rest)
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Action Buttons -->
-                        <div style="display: flex; flex-wrap: wrap; gap: 12px;">
-                            <button onclick="saveConfig()" class="btn btn-save" style="flex: 1; min-width: 140px;">
-                                💾 Save Config
-                            </button>
-                            <button onclick="downloadConfig()" class="btn btn-secondary" style="flex: 1; min-width: 140px;">
-                                ⬇️ Download JSON
-                            </button>
-                            <button onclick="triggerLoadFile()" class="btn btn-secondary" style="flex: 1; min-width: 140px;">
-                                ⬆️ Load Config
-                            </button>
-                            <button onclick="startWorkout()" class="btn btn-primary" style="flex: 2; min-width: 180px; font-size: 20px;">
-                                ▶️ START WORKOUT
-                            </button>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- SAVED WORKOUTS -->
-                <div class="card">
-                    <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 24px;">
-                        <h3 style="font-size: 20px; font-weight: 600;">Saved Workouts</h3>
-                        <span onclick="clearSaved()" style="font-size: 12px; color: #a1a1aa; cursor: pointer;">CLEAR ALL</span>
-                    </div>
-                    
-                    <div id="saved-list" class="saved-list">
-                        <!-- Populated by JS -->
-                    </div>
-                    
-                    <div style="margin-top: auto; padding-top: 24px; border-top: 1px solid #3f3f46; font-size: 12px; color: #71717a; line-height: 1.4;">
-                        All configs are stored locally in your browser.<br>
-                        Last 5 seconds of every work AND rest interval will beep + voice countdown.
-                    </div>
-                </div>
-
-            </div>
-        </div>
-
-        <!-- TIMER SCREEN -->
-        <div id="timer-screen">
-
-            <div class="timer-header">
-                <div onclick="backToSetup()" style="color: #a1a1aa; display: flex; align-items: center; gap: 6px; cursor: pointer;">
-                    ← Back to setup
-                </div>
-                <div id="timer-workout-name" class="header-font" style="font-size: 24px; text-align: center; flex: 1;"></div>
-                <div style="background-color: #18181b; padding: 4px 20px; border-radius: 9999px; font-size: 13px; font-weight: 600; color: #10b981;">LIVE</div>
-            </div>
-
-            <div class="timer-display">
-
-                <!-- Current Phase -->
-                <div id="phase-label" class="phase-label">
-                    <!-- JS injected -->
-                </div>
-
-                <!-- Big Countdown -->
-                <div id="phase-time" class="phase-time digital">00:45</div>
-
-                <!-- Progress info -->
-                <div class="progress-info">
-                    <div>
-                        <div style="font-size: 12px; color: #a1a1aa; text-transform: uppercase; margin-bottom: 4px;">TYPES COMPLETED</div>
-                        <div style="display: flex; align-items: baseline; justify-content: center; gap: 4px;">
-                            <span id="types-completed-display" class="digital" style="font-size: 52px; font-weight: 600;">0</span>
-                            <span style="font-size: 28px; color: #a1a1aa;">/</span>
-                            <span id="total-types-display" class="digital" style="font-size: 32px; color: #a1a1aa;">3</span>
-                        </div>
-                    </div>
-                    <div>
-                        <div style="font-size: 12px; color: #a1a1aa; text-transform: uppercase; margin-bottom: 4px;">REPS COMPLETED</div>
-                        <div style="display: flex; align-items: baseline; justify-content: center; gap: 4px;">
-                            <span id="reps-completed-display" class="digital" style="font-size: 52px; font-weight: 600;">0</span>
-                            <span style="font-size: 28px; color: #a1a1aa;">/</span>
-                            <span id="reps-per-type-display" class="digital" style="font-size: 32px; color: #a1a1aa;">4</span>
-                        </div>
-                        <div id="current-type-name" style="margin-top: 8px; font-size: 15px; color: #10b981;"></div>
-                    </div>
-                </div>
-
-                <!-- Overall Progress -->
-                <div class="progress-bar-container">
-                    <div style="display: flex; justify-content: space-between; font-size: 13px; color: #a1a1aa; margin-bottom: 6px;">
-                        <div>TIME ELAPSED</div>
-                        <div id="elapsed-time" class="digital">00:00</div>
-                        <div id="total-time-timer" class="digital">12:45</div>
-                    </div>
-                    <div class="progress-bar">
-                        <div id="progress-bar" class="progress-bar-fill"></div>
-                    </div>
-                </div>
-
-                <!-- Controls -->
-                <div class="timer-controls">
-                    <button onclick="skipBack()" id="skip-back-btn" class="small-btn skip-btn" title="Previous interval">⏮</button>
-                    <button onclick="togglePlayPause()" id="play-pause-btn" class="big-btn btn-primary">▶️</button>
-                    <button onclick="skipForward()" id="skip-fwd-btn" class="small-btn skip-btn" title="Next interval">⏭</button>
-                    <button onclick="stopWorkout()" class="small-btn">⏹️</button>
-                    <button onclick="resetTimer()" class="small-btn">🔄</button>
-                </div>
-
-                <div style="position: absolute; bottom: 32px; right: 32px; font-size: 12px; background-color: rgba(0,0,0,0.6); padding: 6px 16px; border-radius: 9999px; display: flex; align-items: center; gap: 6px; color: #10b981;">
-                    <span style="animation: pulse 2s infinite;">🔊</span>
-                    LAST 5s CALL OUT ENABLED (WORK + REST)
-                </div>
-            </div>
-        </div>
+      <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+        <div class="status-pill" aria-hidden="true"><span style="width:8px;height:8px;background:var(--primary);border-radius:50%;display:inline-block;animation:pulse 2s infinite"></span>READY TO SWEAT</div>
+        <div class="about-link" onclick="showAbout()">ℹ️ <span class="hidden-sm">How it works</span></div>
+      </div>
     </div>
+  </header>
 
-    <!-- Hidden file input -->
-    <input type="file" id="load-file-input" accept=".json" style="display: none;">
+  <div class="container">
 
-    <!-- Completed modal -->
-    <div id="completed-modal" class="modal" onclick="if(event.target && event.target.id === 'completed-modal')hideCompletedModal()">
-        <div class="modal-content" onclick="event.stopImmediatePropagation()">
-            <div style="font-size: 72px; margin-bottom: 24px;">🏆</div>
-            <h2 style="font-size: 28px; font-weight: 600; margin-bottom: 8px;">Workout Complete!</h2>
-            <p id="completed-name" style="color: #10b981; margin-bottom: 32px;"></p>
-            <button onclick="hideCompletedModal(); backToSetup()" class="btn btn-primary" style="width: 100%; height: 56px; font-size: 18px;">
-                Back to Setup
-            </button>
-        </div>
-    </div>
+    <!-- SETUP SCREEN -->
+    <div id="setup-screen">
+      <div class="main-grid">
 
-    <!-- About modal -->
-    <div id="about-modal" class="modal" onclick="if(event.target && event.target.id === 'about-modal')hideAbout()">
-        <div class="modal-content" style="max-width: 460px;" onclick="event.stopImmediatePropagation()">
-            <h2 style="font-size: 24px; margin-bottom: 20px;">How the Workout Timer works</h2>
-            <ul style="text-align: left; font-size: 15px; line-height: 1.7;">
-                <li style="display: flex; gap: 12px; margin-bottom: 16px;"><span style="color: #10b981; font-family: monospace;">1.</span> Configure name, number of workout types, repetitions per type, work time, and rest time.</li>
-                <li style="display: flex; gap: 12px; margin-bottom: 16px;"><span style="color: #10b981; font-family: monospace;">2.</span> Each workout type runs its repetitions automatically: WORK → REST → WORK → REST…</li>
-                <li style="display: flex; gap: 12px; margin-bottom: 16px;"><span style="color: #10b981; font-family: monospace;">3.</span> Last workout has no trailing rest. Last 5 seconds of <strong>every WORK and REST interval</strong> triggers audio beep + spoken countdown.</li>
-                <li style="display: flex; gap: 12px;"><span style="color: #10b981; font-family: monospace;">4.</span> Fully mobile responsive. Save / download / load configs as JSON. All data stored in browser.</li>
-            </ul>
-            <button onclick="hideAbout()" class="btn btn-primary" style="margin-top: 32px; width: 100%; height: 52px;">Got it, thanks!</button>
-        </div>
-    </div>
+        <div class="card">
+          <h2 style="font-size:20px;font-weight:700;margin-bottom:16px">Configure Your Workout</h2>
 
-    <script>
-        // Global state
-        let currentConfig = {
-            workoutName: "Morning Circuit",
-            numTypes: 3,
-            numRepsPerType: 4,
-            workTime: 45,
-            restTime: 15,
-            typesNames: []
-        }
+          <div style="display:flex;flex-direction:column;gap:18px">
 
-        let timerState = {
-            isRunning: false,
-            timerInterval: null,
-            elapsedSeconds: 0,
-            phaseRemaining: 45,
-            currentPhase: 'work',
-            currentTypeIdx: 0,
-            currentRepIdx: 0
-        }
+            <div>
+              <label class="form-label">WORKOUT NAME</label>
+              <div class="input-wrapper">
+                <input id="workout-name" type="text" value="Morning Circuit" style="font-size:16px;width:100%" />
+              </div>
+            </div>
 
-        let audioContext = null
-        let savedWorkouts = []
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+              <div>
+                <label class="form-label">NUMBER OF WORKOUT TYPES</label>
+                <div class="input-wrapper">
+                  <input id="num-types" type="number" value="7" min="1" max="12" oninput="updateTypesList()" class="input-large" />
+                  <span style="color:var(--muted);font-size:13px;white-space:nowrap">types</span>
+                </div>
+              </div>
+              <div>
+                <label class="form-label">REPS PER TYPE</label>
+                <div class="input-wrapper">
+                  <input id="num-reps" type="number" value="3" min="1" max="20" oninput="updateTotalTime()" class="input-large" />
+                  <span style="color:var(--muted);font-size:13px;white-space:nowrap">reps</span>
+                </div>
+              </div>
+            </div>
 
-        // Format seconds to MM:SS
-        function formatTime(seconds) {
-            const min = Math.floor(seconds / 60)
-            const sec = seconds % 60
-            return `${min.toString().padStart(2, '0')}:${sec.toString().padStart(2, '0')}`
-        }
+            <div>
+              <label class="form-label">WORKOUT TYPE NAMES (EDITABLE)</label>
+              <div id="types-list" class="types-grid"></div>
+            </div>
 
-        // Calculate total workout time
-        function calculateTotalTime(config) {
-            const numWorks = config.numTypes * config.numRepsPerType
-            if (numWorks === 0) return 0
-            const numRests = numWorks - 1
-            return (numWorks * config.workTime) + (numRests * config.restTime)
-        }
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+              <div>
+                <label class="form-label">TIME PER WORK (seconds)</label>
+                <div class="input-wrapper">
+                  <input id="work-time" type="number" value="36" min="5" step="5" oninput="updateTotalTime()" class="input-large" />
+                  <span style="color:var(--primary);font-weight:700">WORK</span>
+                </div>
+              </div>
+              <div>
+                <label class="form-label">REST TIME (seconds)</label>
+                <div class="input-wrapper">
+                  <input id="rest-time" type="number" value="30" min="0" step="5" oninput="updateTotalTime()" class="input-large" />
+                  <span style="color:var(--accent);font-weight:700">REST</span>
+                </div>
+              </div>
+            </div>
 
-        // Update total time display
-        function updateTotalTime() {
-            const numTypes = parseInt(document.getElementById('num-types').value) || 1
-            const numReps = parseInt(document.getElementById('num-reps').value) || 1
-            const work = parseInt(document.getElementById('work-time').value) || 45
-            const rest = parseInt(document.getElementById('rest-time').value) || 0
-            
-            const total = (numTypes * numReps * work) + ((numTypes * numReps - 1) * rest)
-            document.getElementById('total-time-display').textContent = formatTime(total)
-        }
-
-        // Populate editable workout type names
-        function updateTypesList() {
-            const container = document.getElementById('types-list')
-            const count = parseInt(document.getElementById('num-types').value) || 1
-            container.innerHTML = ''
-            
-            currentConfig.typesNames = currentConfig.typesNames || []
-            
-            while (currentConfig.typesNames.length < count) {
-                currentConfig.typesNames.push(`Exercise ${currentConfig.typesNames.length + 1}`)
-            }
-            currentConfig.typesNames = currentConfig.typesNames.slice(0, count)
-            
-            for (let i = 0; i < count; i++) {
-                const div = document.createElement('div')
-                div.className = 'type-item'
-                div.innerHTML = `
-                    <span style="color:#a1a1aa; font-size:14px; width:28px;">#${i+1}</span>
-                    <input 
-                        type="text" 
-                        value="${currentConfig.typesNames[i]}"
-                        oninput="currentConfig.typesNames[${i}] = this.value"
-                        style="flex:1; background:transparent; border:none; outline:none; font-size:16px; color:white;">
-                `
-                container.appendChild(div)
-            }
-            updateTotalTime()
-        }
-
-        // Get current config from form
-        function getFormConfig() {
-            return {
-                workoutName: document.getElementById('workout-name').value.trim() || 'Untitled Workout',
-                numTypes: parseInt(document.getElementById('num-types').value) || 1,
-                numRepsPerType: parseInt(document.getElementById('num-reps').value) || 1,
-                workTime: parseInt(document.getElementById('work-time').value) || 45,
-                restTime: parseInt(document.getElementById('rest-time').value) || 0,
-                typesNames: currentConfig.typesNames || []
-            }
-        }
-
-        // Load form from config object
-        function loadFormFromConfig(config) {
-            document.getElementById('workout-name').value = config.workoutName || 'Untitled Workout'
-            document.getElementById('num-types').value = config.numTypes || 3
-            document.getElementById('num-reps').value = config.numRepsPerType || 4
-            document.getElementById('work-time').value = config.workTime || 45
-            document.getElementById('rest-time').value = config.restTime || 15
-            
-            currentConfig.typesNames = config.typesNames && config.typesNames.length > 0 
-                ? [...config.typesNames] 
-                : Array.from({length: config.numTypes || 3}, (_, i) => `Exercise ${i+1}`)
-            
-            updateTypesList()
-            updateTotalTime()
-        }
-
-        // Save current config
-        function saveConfig() {
-            const config = getFormConfig()
-            const saveName = prompt('Save this workout as:', config.workoutName)
-            if (!saveName) return
-            
-            const toSave = {
-                id: Date.now(),
-                saveName: saveName,
-                ...config
-            }
-            
-            savedWorkouts.unshift(toSave)
-            if (savedWorkouts.length > 12) savedWorkouts.pop()
-            localStorage.setItem('workoutConfigs', JSON.stringify(savedWorkouts))
-            
-            renderSavedList()
-            alert(`✅ Saved as "${saveName}"`)
-        }
-
-        // Download as JSON
-        function downloadConfig() {
-            const config = getFormConfig()
-            const dataStr = JSON.stringify(config, null, 2)
-            const blob = new Blob([dataStr], { type: 'application/json' })
-            const url = URL.createObjectURL(blob)
-            const link = document.createElement('a')
-            link.href = url
-            link.download = `${config.workoutName.replace(/[^a-zA-Z0-9]/g, '-')}-timer-config.json`
-            link.click()
-            URL.revokeObjectURL(url)
-        }
-
-        // Trigger hidden file input
-        function triggerLoadFile() {
-            const input = document.getElementById('load-file-input')
-            input.value = ''
-            input.click()
-        }
-
-        // Handle file load
-        function handleFileLoad(e) {
-            const file = e.target.files[0]
-            if (!file) return
-            
-            const reader = new FileReader()
-            reader.onload = function(ev) {
-                try {
-                    const loadedConfig = JSON.parse(ev.target.result)
-                    if (!loadedConfig.numTypes || !loadedConfig.workTime) {
-                        throw new Error('Invalid config')
-                    }
-                    loadFormFromConfig(loadedConfig)
-                    alert('✅ Config loaded successfully!')
-                } catch (err) {
-                    alert('❌ Invalid or corrupted JSON file')
-                }
-            }
-            reader.readAsText(file)
-        }
-
-        // Render saved workouts list
-        function renderSavedList() {
-            const container = document.getElementById('saved-list')
-            container.innerHTML = ''
-            
-            if (savedWorkouts.length === 0) {
-                container.innerHTML = `
-                <div style="background-color: #18181b; border: 2px dashed #3f3f46; border-radius: 16px; padding: 40px 24px; text-align: center; color: #a1a1aa;">
-                    No saved workouts yet.<br>Configure one and click SAVE.
-                </div>`
-                return
-            }
-            
-            savedWorkouts.forEach((item, index) => {
-                const total = calculateTotalTime(item)
-                const div = document.createElement('div')
-                div.className = 'saved-item'
-                div.innerHTML = `
+            <div class="total-time-box">
+              <div class="left">
+                <div style="font-size:30px">⏳</div>
                 <div>
-                    <div style="font-weight: 600;">${item.saveName}</div>
-                    <div style="font-size: 13px; color: #a1a1aa;">${item.numTypes} types × ${item.numRepsPerType} reps • ${formatTime(total)}</div>
+                  <div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1px">Total workout time</div>
+                  <div id="total-time-display" class="digital" style="font-size:28px;font-weight:700">12:45</div>
                 </div>
-                <div style="display: flex; gap: 8px;">
-                    <button onclick="event.stopImmediatePropagation(); loadSaved(${index});" 
-                            style="background-color: #10b981; color: white; padding: 8px 20px; border-radius: 9999px; font-size: 13px; font-weight: 600;">LOAD</button>
-                    <button onclick="event.stopImmediatePropagation(); deleteSaved(${index});" 
-                            style="padding: 8px 12px; color: #f87171;">🗑</button>
-                </div>`
-                container.appendChild(div)
-            })
-        }
+              </div>
+              <div style="text-align:right">
+                <div onclick="calloutDemo()" style="cursor:pointer;display:inline-flex;align-items:center;gap:6px;background:rgba(5,46,22,0.6);color:var(--primary);padding:6px 12px;border-radius:9999px;font-size:12px">🔊 Last 5s callout</div>
+              </div>
+            </div>
 
-        function loadSaved(index) {
-            const config = savedWorkouts[index]
-            loadFormFromConfig(config)
-        }
+            <div class="actions-row">
+              <button onclick="saveConfig()" class="btn btn-save">💾 Save</button>
+              <button onclick="downloadConfig()" class="btn btn-secondary">⬇️ Download JSON</button>
+              <button onclick="triggerLoadFile()" class="btn btn-secondary">⬆️ Load Config</button>
+              <button onclick="startWorkout()" class="btn btn-primary" style="flex:2;min-width:160px;font-size:16px">▶️ Start Workout</button>
+            </div>
 
-        function deleteSaved(index) {
-            if (!confirm('Delete this saved workout?')) return
-            savedWorkouts.splice(index, 1)
-            localStorage.setItem('workoutConfigs', JSON.stringify(savedWorkouts))
-            renderSavedList()
-        }
+          </div>
+        </div>
 
-        function clearSaved() {
-            if (!confirm('Clear ALL saved workouts?')) return
-            savedWorkouts = []
-            localStorage.removeItem('workoutConfigs')
-            renderSavedList()
-        }
+        <div class="card">
+          <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:14px">
+            <h3 style="font-size:16px;font-weight:700">Saved Workouts</h3>
+            <span onclick="clearSaved()" style="font-size:12px;color:var(--muted);cursor:pointer">CLEAR ALL</span>
+          </div>
 
-        // Audio functions
-        function playBeep(freq = 800, duration = 180) {
-            try {
-                if (!audioContext) {
-                    audioContext = new (window.AudioContext || window.webkitAudioContext)()
-                }
-                const oscillator = audioContext.createOscillator()
-                const gainNode = audioContext.createGain()
-                oscillator.connect(gainNode)
-                gainNode.connect(audioContext.destination)
-                oscillator.frequency.value = freq
-                gainNode.gain.value = 0.6
-                oscillator.start()
-                setTimeout(() => {
-                    gainNode.gain.linearRampToValueAtTime(0, audioContext.currentTime + 0.02)
-                    oscillator.stop(audioContext.currentTime + 0.3)
-                }, duration)
-            } catch (e) {}
-        }
+          <div id="saved-list" class="saved-list"></div>
 
-        function speakCountdown(number) {
-            if ('speechSynthesis' in window) {
-                try {
-                    const utterance = new SpeechSynthesisUtterance(number.toString())
-                    utterance.pitch = 1.1
-                    utterance.rate = 1.3
-                    utterance.volume = 0.9
-                    speechSynthesis.speak(utterance)
-                } catch (e) {}
-            }
-        }
+          <div style="margin-top:14px;padding-top:12px;border-top:1px solid var(--border);font-size:12px;color:#71717a;line-height:1.4">
+            All configs stored locally.<br/>Last 5s of every work AND rest interval will beep + voice countdown.
+          </div>
+        </div>
 
-        function calloutDemo() {
-            playBeep(1200, 80)
-            setTimeout(() => playBeep(1000, 80), 120)
-            speakCountdown(5)
-            alert('✅ Audio & voice callout demo triggered.\n\nLast 5 seconds of BOTH work and rest intervals will now beep + speak countdown.')
-        }
+      </div>
+    </div>
 
-        // Timer tick - UPDATED: now calls out last 5s for BOTH work AND rest
-        function timerTick() {
-            if (!timerState.isRunning) return
-            
-            timerState.phaseRemaining = Math.max(0, timerState.phaseRemaining - 1)
-            timerState.elapsedSeconds++
-            
-            updateTimerUI()
-            
-            // NEW: Call out last 5 seconds of WORK or REST
-            if (timerState.phaseRemaining <= 5 && timerState.phaseRemaining >= 1) {
-                // Slightly different beep tone for rest
-                const isRest = timerState.currentPhase === 'rest'
-                const baseFreq = isRest ? 650 : 900
-                playBeep(baseFreq + (timerState.phaseRemaining * 80), 120)
-                speakCountdown(timerState.phaseRemaining)
-            }
-            
-            if (timerState.phaseRemaining <= 0) {
-                handlePhaseTransition()
-            }
-        }
+    <!-- TIMER SCREEN -->
+    <div id="timer-screen">
 
-        // Safe phase transition
-        function handlePhaseTransition() {
-            const cfg = currentConfig
-            
-            while (true) {
-                if (timerState.currentPhase === 'work') {
-                    const isLastRepOfLastType = 
-                        (timerState.currentTypeIdx === cfg.numTypes - 1) && 
-                        (timerState.currentRepIdx === cfg.numRepsPerType - 1)
-                    
-                    if (isLastRepOfLastType) {
-                        endWorkout()
-                        return
-                    }
-                    
-                    timerState.currentPhase = 'rest'
-                    timerState.phaseRemaining = cfg.restTime || 0
-                } 
-                else {
-                    timerState.currentRepIdx++
-                    
-                    if (timerState.currentRepIdx >= cfg.numRepsPerType) {
-                        timerState.currentTypeIdx++
-                        timerState.currentRepIdx = 0
-                    }
-                    
-                    timerState.currentPhase = 'work'
-                    timerState.phaseRemaining = cfg.workTime
-                }
-                
-                if (timerState.phaseRemaining > 0) break
-            }
-            
-            updateTimerUI()
-        }
+      <div class="timer-header">
+        <div onclick="backToSetup()" style="color:var(--muted);display:flex;align-items:center;gap:6px;cursor:pointer">← Back</div>
+        <div class="center header-font" id="timer-workout-name" style="font-size:16px"></div>
+        <div style="background:var(--bg);padding:6px 12px;border-radius:9999px;font-size:12px;font-weight:700;color:var(--primary)">LIVE</div>
+      </div>
 
-        function endWorkout() {
-            timerState.isRunning = false
-            if (timerState.timerInterval) {
-                clearInterval(timerState.timerInterval)
-                timerState.timerInterval = null
-            }
-            
-            document.getElementById('completed-name').innerHTML = `
-                ${currentConfig.workoutName}<br>
-                <span style="font-size: 20px; color: #a1a1aa;">Completed in ${formatTime(timerState.elapsedSeconds)}</span>
-            `
-            document.getElementById('completed-modal').style.display = 'flex'
-        }
+      <div class="timer-display">
 
-        function hideCompletedModal() {
-            document.getElementById('completed-modal').style.display = 'none'
-        }
+        <div id="phase-label" class="phase-label"></div>
+        <div id="phase-time" class="phase-time digital">00:45</div>
 
-        // Update timer UI
-        function updateTimerUI() {
-            const cfg = currentConfig
-            
-            document.getElementById('phase-time').textContent = formatTime(timerState.phaseRemaining)
-            
-            const typeName = cfg.typesNames[timerState.currentTypeIdx] || `Type ${timerState.currentTypeIdx + 1}`
-            const repNum = timerState.currentRepIdx + 1
-            
-            let labelHTML = ''
-            
-            if (timerState.currentPhase === 'work') {
-                labelHTML = `
-                    <span style="background-color: #10b981; color: white; padding: 8px 24px; border-radius: 9999px; font-size: 22px;">WORK</span>
-                    <span style="color: #10b981;">${typeName} • Rep ${repNum}/${cfg.numRepsPerType}</span>
-                `
-                document.getElementById('phase-time').style.color = '#10b981'
-            } else {
-                labelHTML = `
-                    <span style="background-color: #0ea5e9; color: white; padding: 8px 24px; border-radius: 9999px; font-size: 22px;">REST</span>
-                    <span style="color: #0ea5e9;">${typeName} • after Rep ${repNum}</span>
-                `
-                document.getElementById('phase-time').style.color = '#0ea5e9'
-            }
-            
-            document.getElementById('phase-label').innerHTML = labelHTML
-            
-            document.getElementById('types-completed-display').textContent = timerState.currentTypeIdx
-            document.getElementById('total-types-display').textContent = cfg.numTypes
-            document.getElementById('reps-completed-display').textContent = timerState.currentRepIdx + (timerState.currentPhase === 'rest' ? 1 : 0)
-            document.getElementById('reps-per-type-display').textContent = cfg.numRepsPerType
-            document.getElementById('current-type-name').textContent = typeName
-            
-            document.getElementById('elapsed-time').textContent = formatTime(timerState.elapsedSeconds)
-            
-            const total = calculateTotalTime(cfg)
-            const progress = total > 0 ? Math.min(Math.floor((timerState.elapsedSeconds / total) * 100), 100) : 0
-            document.getElementById('progress-bar').style.width = `${progress}%`
-            
-            document.getElementById('total-time-timer').textContent = formatTime(total)
-            
-            const btn = document.getElementById('play-pause-btn')
-            btn.innerHTML = timerState.isRunning ? '⏸️' : '▶️'
-        }
+        <div class="progress-info">
+          <div>
+            <div style="font-size:11px;color:var(--muted);text-transform:uppercase;margin-bottom:6px">TYPES COMPLETED</div>
+            <div style="display:flex;align-items:baseline;justify-content:center;gap:6px">
+              <span id="types-completed-display" class="digital" style="font-size:36px;font-weight:700">0</span>
+              <span style="font-size:20px;color:var(--muted);">/</span>
+              <span id="total-types-display" class="digital" style="font-size:18px;color:var(--muted)">3</span>
+            </div>
+          </div>
 
-        function startTimer() {
-            if (timerState.timerInterval) return
-            timerState.isRunning = true
-            timerState.timerInterval = setInterval(timerTick, 1000)
-            updateTimerUI()
-        }
+          <div>
+            <div style="font-size:11px;color:var(--muted);text-transform:uppercase;margin-bottom:6px">REPS COMPLETED</div>
+            <div style="display:flex;align-items:baseline;justify-content:center;gap:6px">
+              <span id="reps-completed-display" class="digital" style="font-size:36px;font-weight:700">0</span>
+              <span style="font-size:20px;color:var(--muted);">/</span>
+              <span id="reps-per-type-display" class="digital" style="font-size:18px;color:var(--muted)">4</span>
+            </div>
+            <div id="current-type-name" style="margin-top:6px;font-size:13px;color:var(--primary)"></div>
+          </div>
+        </div>
 
-        function pauseTimer() {
-            timerState.isRunning = false
-            if (timerState.timerInterval) {
-                clearInterval(timerState.timerInterval)
-                timerState.timerInterval = null
-            }
-            updateTimerUI()
-        }
+        <div class="progress-bar-container">
+          <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--muted);margin-bottom:6px">
+            <div>TIME ELAPSED</div>
+            <div id="elapsed-time" class="digital">00:00</div>
+            <div id="total-time-timer" class="digital">12:45</div>
+          </div>
+          <div class="progress-bar"><div id="progress-bar" class="progress-bar-fill"></div></div>
+        </div>
 
-        function togglePlayPause() {
-            if (timerState.isRunning) {
-                pauseTimer()
-            } else {
-                startTimer()
-            }
-        }
+        <div class="timer-controls">
+          <button onclick="skipBack()" id="skip-back-btn" class="small-btn skip-btn" title="Previous interval">⏮</button>
+          <button onclick="togglePlayPause()" id="play-pause-btn" class="big-btn btn-primary">▶️</button>
+          <button onclick="skipForward()" id="skip-fwd-btn" class="small-btn skip-btn" title="Next interval">⏭</button>
+          <button onclick="stopWorkout()" class="small-btn">⏹️</button>
+          <button onclick="resetTimer()" class="small-btn">🔄</button>
+        </div>
 
-        function resetTimer() {
-            pauseTimer()
-            timerState.elapsedSeconds = 0
-            timerState.currentTypeIdx = 0
-            timerState.currentRepIdx = 0
-            timerState.currentPhase = 'work'
-            timerState.phaseRemaining = currentConfig.workTime
-            updateTimerUI()
-        }
+        <div class="floating-info"><span style="animation:pulse 2s infinite">🔊</span>LAST 5s CALL OUT ENABLED</div>
 
-        // ---- Skip helpers ----
-        // Build a flat ordered list of all phases with their durations
-        function buildPhaseSequence() {
-            const cfg = currentConfig
-            const seq = []
-            for (let t = 0; t < cfg.numTypes; t++) {
-                for (let r = 0; r < cfg.numRepsPerType; r++) {
-                    seq.push({ phase: 'work', typeIdx: t, repIdx: r, duration: cfg.workTime })
-                    const isLast = (t === cfg.numTypes - 1) && (r === cfg.numRepsPerType - 1)
-                    if (!isLast) {
-                        seq.push({ phase: 'rest', typeIdx: t, repIdx: r, duration: cfg.restTime || 0 })
-                    }
-                }
-            }
-            return seq
-        }
+      </div>
 
-        // Find the index of the current phase in the sequence
-        function currentPhaseIndex(seq) {
-            return seq.findIndex(p =>
-                p.phase === timerState.currentPhase &&
-                p.typeIdx === timerState.currentTypeIdx &&
-                p.repIdx === timerState.currentRepIdx
-            )
-        }
+    </div>
 
-        // How many seconds elapsed BEFORE the current phase started
-        function elapsedBeforeCurrentPhase(seq, idx) {
-            let secs = 0
-            for (let i = 0; i < idx; i++) secs += seq[i].duration
-            return secs
-        }
+  </div>
 
-        // Jump to a phase by index, restore elapsed seconds to the start of that phase
-        function jumpToPhase(seq, idx) {
-            if (idx < 0 || idx >= seq.length) return
-            const target = seq[idx]
-            const wasRunning = timerState.isRunning
-            pauseTimer()
-            timerState.currentTypeIdx = target.typeIdx
-            timerState.currentRepIdx  = target.repIdx
-            timerState.currentPhase   = target.phase
-            timerState.phaseRemaining = target.duration
-            timerState.elapsedSeconds = elapsedBeforeCurrentPhase(seq, idx)
-            updateTimerUI()
-            if (wasRunning) startTimer()
-        }
+  <input type="file" id="load-file-input" accept=".json" style="display:none" />
 
-        function skipBack() {
-            const seq = buildPhaseSequence()
-            const idx = currentPhaseIndex(seq)
-            if (idx < 0) return
-            const currentPhaseDuration = seq[idx].duration
-            const timeIntoPhase = currentPhaseDuration - timerState.phaseRemaining
-            // If we are more than 3 s into the current phase, restart it; otherwise go to previous
-            if (timeIntoPhase > 3 && idx > 0) {
-                jumpToPhase(seq, idx)   // restart current
-            } else if (idx > 0) {
-                jumpToPhase(seq, idx - 1)
-            } else {
-                jumpToPhase(seq, 0)     // already at start – just restart
-            }
-        }
+  <!-- Completed modal -->
+  <div id="completed-modal" class="modal" onclick="if(event.target && event.target.id === 'completed-modal')hideCompletedModal()">
+    <div class="modal-content" onclick="event.stopImmediatePropagation()">
+      <div style="font-size:64px;margin-bottom:18px">🏆</div>
+      <h2 style="font-size:20px;font-weight:700;margin-bottom:8px">Workout Complete!</h2>
+      <p id="completed-name" style="color:var(--primary);margin-bottom:18px"></p>
+      <button onclick="hideCompletedModal(); backToSetup()" class="btn btn-primary" style="width:100%;height:48px;font-size:15px">Back to Setup</button>
+    </div>
+  </div>
 
-        function skipForward() {
-            const seq = buildPhaseSequence()
-            const idx = currentPhaseIndex(seq)
-            if (idx < 0) return
-            if (idx < seq.length - 1) {
-                jumpToPhase(seq, idx + 1)
-            } else {
-                // Already at the last phase – end the workout
-                endWorkout()
-            }
-        }
-        // ---- End skip helpers ----
+  <!-- About modal -->
+  <div id="about-modal" class="modal" onclick="if(event.target && event.target.id === 'about-modal')hideAbout()">
+    <div class="modal-content" style="max-width:520px" onclick="event.stopImmediatePropagation()">
+      <h2 style="font-size:18px;margin-bottom:12px">How the Workout Timer works</h2>
+      <ul style="text-align:left;font-size:14px;line-height:1.6">
+        <li style="margin-bottom:10px"><strong>1.</strong> Configure name, number of types, reps, work & rest times.</li>
+        <li style="margin-bottom:10px"><strong>2.</strong> Each type runs: WORK → REST → repeat.</li>
+        <li style="margin-bottom:10px"><strong>3.</strong> Last 5 seconds of every WORK and REST interval triggers beep + spoken countdown.</li>
+        <li><strong>4.</strong> Mobile-friendly UI. Save / download / load configs as JSON.</li>
+      </ul>
+      <button onclick="hideAbout()" class="btn btn-primary" style="margin-top:14px;width:100%;height:44px">Got it</button>
+    </div>
+  </div>
 
-        function stopWorkout() {
-            pauseTimer()
-            resetTimer()
-            backToSetup()
-        }
+  <script>
+    // -- original JS preserved, minor adjustments to initial defaults to match responsive layout --
+    let currentConfig = {
+      workoutName: "Morning Circuit",
+      numTypes: 3,
+      numRepsPerType: 4,
+      workTime: 45,
+      restTime: 15,
+      typesNames: []
+    }
 
-        function startWorkout() {
-            currentConfig = getFormConfig()
-            
-            if (currentConfig.numTypes < 1 || currentConfig.numRepsPerType < 1) {
-                alert('Number of types and reps must be at least 1')
-                return
-            }
-            
-            timerState.elapsedSeconds = 0
-            timerState.currentTypeIdx = 0
-            timerState.currentRepIdx = 0
-            timerState.currentPhase = 'work'
-            timerState.phaseRemaining = currentConfig.workTime
-            
-            document.getElementById('setup-screen').style.display = 'none'
-            const timerScreen = document.getElementById('timer-screen')
-            timerScreen.style.display = 'flex'
-            
-            document.getElementById('timer-workout-name').textContent = currentConfig.workoutName
-            
-            updateTimerUI()
-        }
+    let timerState = {
+      isRunning:false,timerInterval:null,elapsedSeconds:0,phaseRemaining:45,currentPhase:'work',currentTypeIdx:0,currentRepIdx:0
+    }
+    let audioContext=null
+    let savedWorkouts=[]
 
-        function backToSetup() {
-            document.getElementById('timer-screen').style.display = 'none'
-            document.getElementById('setup-screen').style.display = 'block'
-            pauseTimer()
-        }
+    function formatTime(seconds){const m=Math.floor(seconds/60);const s=seconds%60;return `${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`}
+    function calculateTotalTime(cfg){const numWorks=cfg.numTypes*cfg.numRepsPerType;if(numWorks===0)return 0;const numRests=numWorks-1;return (numWorks*cfg.workTime)+(numRests*cfg.restTime)}
+    function updateTotalTime(){const numTypes=parseInt(document.getElementById('num-types').value)||1;const numReps=parseInt(document.getElementById('num-reps').value)||1;const work=parseInt(document.getElementById('work-time').value)||45;const rest=parseInt(document.getElementById('rest-time').value)||0;const total=(numTypes*numReps*work)+((numTypes*numReps-1)*rest);document.getElementById('total-time-display').textContent=formatTime(total)}
 
-        function showAbout() {
-            document.getElementById('about-modal').style.display = 'flex'
-        }
+    function updateTypesList(){const container=document.getElementById('types-list');const count=parseInt(document.getElementById('num-types').value)||1;container.innerHTML='';currentConfig.typesNames=currentConfig.typesNames||[];while(currentConfig.typesNames.length<count){currentConfig.typesNames.push(`Exercise ${currentConfig.typesNames.length+1}`)}currentConfig.typesNames=currentConfig.typesNames.slice(0,count);for(let i=0;i<count;i++){const div=document.createElement('div');div.className='type-item';div.innerHTML=`<span style="color:${'var(--muted)'};font-size:13px;width:28px">#${i+1}</span><input type="text" value="${currentConfig.typesNames[i]}" oninput="currentConfig.typesNames[${i}]=this.value" style="flex:1;background:transparent;border:none;outline:none;color:white;font-size:15px" />`;container.appendChild(div)}updateTotalTime()}
 
-        function hideAbout() {
-            document.getElementById('about-modal').style.display = 'none'
-        }
+    function getFormConfig(){return{workoutName:document.getElementById('workout-name').value.trim()||'Untitled Workout',numTypes:parseInt(document.getElementById('num-types').value)||1,numRepsPerType:parseInt(document.getElementById('num-reps').value)||1,workTime:parseInt(document.getElementById('work-time').value)||45,restTime:parseInt(document.getElementById('rest-time').value)||0,typesNames:currentConfig.typesNames||[]}}
+    function loadFormFromConfig(cfg){document.getElementById('workout-name').value=cfg.workoutName||'Untitled Workout';document.getElementById('num-types').value=cfg.numTypes||3;document.getElementById('num-reps').value=cfg.numRepsPerType||4;document.getElementById('work-time').value=cfg.workTime||45;document.getElementById('rest-time').value=cfg.restTime||15;currentConfig.typesNames=cfg.typesNames&&cfg.typesNames.length>0? [...cfg.typesNames] : Array.from({length:cfg.numTypes||3},(_,i)=>`Exercise ${i+1}`);updateTypesList();updateTotalTime()}
 
-        // Initialize
-        function init() {
-            try {
-                const saved = localStorage.getItem('workoutConfigs')
-                if (saved) {
-                    savedWorkouts = JSON.parse(saved)
-                }
-                renderSavedList()
-                
-                document.getElementById('load-file-input').addEventListener('change', handleFileLoad)
-                
-                updateTypesList()
-                updateTotalTime()
-                
-                console.log('%c✅ Workout Timer ready (vanilla CSS - last 5s callout for WORK + REST)', 'background:#10b981;color:#fff;padding:2px 6px;border-radius:4px;font-size:12px')
-            } catch (err) {
-                console.error('Workout Timer init error:', err)
-                alert('⚠️ There was a problem starting the timer.\n\nPlease refresh the page.')
-            }
-        }
-        
-        init()
-    </script>
+    function saveConfig(){const cfg=getFormConfig();const saveName=prompt('Save this workout as:',cfg.workoutName);if(!saveName)return;const toSave={id:Date.now(),saveName:saveName,...cfg};savedWorkouts.unshift(toSave);if(savedWorkouts.length>12)savedWorkouts.pop();localStorage.setItem('workoutConfigs',JSON.stringify(savedWorkouts));renderSavedList();alert(`✅ Saved as "${saveName}"`)}
+    function downloadConfig(){const cfg=getFormConfig();const dataStr=JSON.stringify(cfg,null,2);const blob=new Blob([dataStr],{type:'application/json'});const url=URL.createObjectURL(blob);const link=document.createElement('a');link.href=url;link.download=`${cfg.workoutName.replace(/[^a-zA-Z0-9]/g,'-')}-timer-config.json`;link.click();URL.revokeObjectURL(url)}
+    function triggerLoadFile(){const input=document.getElementById('load-file-input');input.value='';input.click()} 
+    function handleFileLoad(e){const file=e.target.files[0];if(!file)return;const reader=new FileReader();reader.onload=function(ev){try{const loadedConfig=JSON.parse(ev.target.result);if(!loadedConfig.numTypes||!loadedConfig.workTime){throw new Error('Invalid config')}loadFormFromConfig(loadedConfig);alert('✅ Config loaded successfully!')}catch(err){alert('❌ Invalid or corrupted JSON file')}};reader.readAsText(file)}
+
+    function renderSavedList(){const container=document.getElementById('saved-list');container.innerHTML='';if(savedWorkouts.length===0){container.innerHTML=`<div style="background:var(--bg);border:2px dashed var(--border);border-radius:12px;padding:28px;text-align:center;color:var(--muted)">No saved workouts yet.<br/>Configure one and click SAVE.</div>`;return}savedWorkouts.forEach((item,index)=>{const total=calculateTotalTime(item);const div=document.createElement('div');div.className='saved-item';div.innerHTML=`<div><div style="font-weight:700">${item.saveName}</div><div style="font-size:13px;color:${'var(--muted)'}">${item.numTypes} types × ${item.numRepsPerType} reps • ${formatTime(total)}</div></div><div style="display:flex;gap:8px"><button onclick="event.stopImmediatePropagation(); loadSaved(${index});" style="background:var(--primary);color:white;padding:8px 14px;border-radius:9999px;font-size:13px;font-weight:700">LOAD</button><button onclick="event.stopImmediatePropagation(); deleteSaved(${index});" style="padding:8px 10px;color:#f87171">🗑</button></div>`;container.appendChild(div)})}
+    function loadSaved(index){const cfg=savedWorkouts[index];loadFormFromConfig(cfg)}
+    function deleteSaved(index){if(!confirm('Delete this saved workout?'))return;savedWorkouts.splice(index,1);localStorage.setItem('workoutConfigs',JSON.stringify(savedWorkouts));renderSavedList()} 
+    function clearSaved(){if(!confirm('Clear ALL saved workouts?'))return;savedWorkouts=[];localStorage.removeItem('workoutConfigs');renderSavedList()} 
+
+    function playBeep(freq=800,duration=180){try{if(!audioContext){audioContext=new(window.AudioContext||window.webkitAudioContext)()}const osc=audioContext.createOscillator();const gain=audioContext.createGain();osc.connect(gain);gain.connect(audioContext.destination);osc.frequency.value=freq;gain.gain.value=0.6;osc.start();setTimeout(()=>{gain.gain.linearRampToValueAtTime(0,audioContext.currentTime+0.02);osc.stop(audioContext.currentTime+0.3)},duration)}catch(e){}
+    }
+    function speakCountdown(number){if('speechSynthesis' in window){try{const u=new SpeechSynthesisUtterance(number.toString());u.pitch=1.1;u.rate=1.3;u.volume=0.9;speechSynthesis.speak(u)}catch(e){}}}
+    function calloutDemo(){playBeep(1200,80);setTimeout(()=>playBeep(1000,80),120);speakCountdown(5);alert('✅ Audio & voice callout demo triggered.\n\nLast 5 seconds of BOTH work and rest intervals will now beep + speak countdown.')} 
+
+    function timerTick(){if(!timerState.isRunning)return;timerState.phaseRemaining=Math.max(0,timerState.phaseRemaining-1);timerState.elapsedSeconds++;updateTimerUI();if(timerState.phaseRemaining<=5&&timerState.phaseRemaining>=1){const isRest=timerState.currentPhase==='rest';const baseFreq=isRest?650:900;playBeep(baseFreq+(timerState.phaseRemaining*80),120);speakCountdown(timerState.phaseRemaining)}if(timerState.phaseRemaining<=0){handlePhaseTransition()}}
+
+    function handlePhaseTransition(){const cfg=currentConfig;while(true){if(timerState.currentPhase==='work'){const isLastRepOfLastType=(timerState.currentTypeIdx===cfg.numTypes-1)&&(timerState.currentRepIdx===cfg.numRepsPerType-1);if(isLastRepOfLastType){endWorkout();return}timerState.currentPhase='rest';timerState.phaseRemaining=cfg.restTime||0}else{timerState.currentRepIdx++;if(timerState.currentRepIdx>=cfg.numRepsPerType){timerState.currentTypeIdx++;timerState.currentRepIdx=0}timerState.currentPhase='work';timerState.phaseRemaining=cfg.workTime}if(timerState.phaseRemaining>0)break}updateTimerUI()}
+
+    function endWorkout(){timerState.isRunning=false;if(timerState.timerInterval){clearInterval(timerState.timerInterval);timerState.timerInterval=null}document.getElementById('completed-name').innerHTML=`${currentConfig.workoutName}<br><span style="font-size:16px;color:${'var(--muted)'}">Completed in ${formatTime(timerState.elapsedSeconds)}</span>`;document.getElementById('completed-modal').style.display='flex'}
+    function hideCompletedModal(){document.getElementById('completed-modal').style.display='none'}
+
+    function updateTimerUI(){const cfg=currentConfig;document.getElementById('phase-time').textContent=formatTime(timerState.phaseRemaining);const typeName=cfg.typesNames[timerState.currentTypeIdx]||`Type ${timerState.currentTypeIdx+1}`;const repNum=timerState.currentRepIdx+1;let labelHTML='';if(timerState.currentPhase==='work'){labelHTML=`<span style="background:var(--primary);color:#fff;padding:8px 16px;border-radius:9999px;font-size:15px">WORK</span><span style="color:var(--primary);font-weight:700">${typeName} • Rep ${repNum}/${cfg.numRepsPerType}</span>`;document.getElementById('phase-time').style.color='var(--primary)'}else{labelHTML=`<span style="background:var(--accent);color:#fff;padding:8px 16px;border-radius:9999px;font-size:15px">REST</span><span style="color:var(--accent);font-weight:700">${typeName} • after Rep ${repNum}</span>`;document.getElementById('phase-time').style.color='var(--accent)'}document.getElementById('phase-label').innerHTML=labelHTML;document.getElementById('types-completed-display').textContent=timerState.currentTypeIdx;document.getElementById('total-types-display').textContent=cfg.numTypes;document.getElementById('reps-completed-display').textContent=timerState.currentRepIdx+(timerState.currentPhase==='rest'?1:0);document.getElementById('reps-per-type-display').textContent=cfg.numRepsPerType;document.getElementById('current-type-name').textContent=typeName;document.getElementById('elapsed-time').textContent=formatTime(timerState.elapsedSeconds);const total=calculateTotalTime(cfg);const progress=total>0?Math.min(Math.floor((timerState.elapsedSeconds/total)*100),100):0;document.getElementById('progress-bar').style.width=`${progress}%`;document.getElementById('total-time-timer').textContent=formatTime(total);const btn=document.getElementById('play-pause-btn');btn.innerHTML=timerState.isRunning?'⏸️':'▶️'}
+
+    function startTimer(){if(timerState.timerInterval)return;timerState.isRunning=true;timerState.timerInterval=setInterval(timerTick,1000);updateTimerUI()}
+    function pauseTimer(){timerState.isRunning=false;if(timerState.timerInterval){clearInterval(timerState.timerInterval);timerState.timerInterval=null}updateTimerUI()}
+    function togglePlayPause(){if(timerState.isRunning)pauseTimer();else startTimer()}
+    function resetTimer(){pauseTimer();timerState.elapsedSeconds=0;timerState.currentTypeIdx=0;timerState.currentRepIdx=0;timerState.currentPhase='work';timerState.phaseRemaining=currentConfig.workTime;updateTimerUI()}
+
+    function buildPhaseSequence(){const cfg=currentConfig;const seq=[];for(let t=0;t<cfg.numTypes;t++){for(let r=0;r<cfg.numRepsPerType;r++){seq.push({phase:'work',typeIdx:t,repIdx:r,duration:cfg.workTime});const isLast=(t===cfg.numTypes-1)&&(r===cfg.numRepsPerType-1);if(!isLast){seq.push({phase:'rest',typeIdx:t,repIdx:r,duration:cfg.restTime||0})}}}return seq}
+    function currentPhaseIndex(seq){return seq.findIndex(p=>p.phase===timerState.currentPhase&&p.typeIdx===timerState.currentTypeIdx&&p.repIdx===timerState.currentRepIdx)}
+    function elapsedBeforeCurrentPhase(seq,idx){let secs=0;for(let i=0;i<idx;i++)secs+=seq[i].duration;return secs}
+    function jumpToPhase(seq,idx){if(idx<0||idx>=seq.length)return;const target=seq[idx];const wasRunning=timerState.isRunning;pauseTimer();timerState.currentTypeIdx=target.typeIdx;timerState.currentRepIdx=target.repIdx;timerState.currentPhase=target.phase;timerState.phaseRemaining=target.duration;timerState.elapsedSeconds=elapsedBeforeCurrentPhase(seq,idx);updateTimerUI();if(wasRunning)startTimer()}
+
+    function skipBack(){const seq=buildPhaseSequence();const idx=currentPhaseIndex(seq);if(idx<0)return;const currentPhaseDuration=seq[idx].duration;const timeIntoPhase=currentPhaseDuration-timerState.phaseRemaining;if(timeIntoPhase>3&&idx>0){jumpToPhase(seq,idx)}else if(idx>0){jumpToPhase(seq,idx-1)}else{jumpToPhase(seq,0)}}
+    function skipForward(){const seq=buildPhaseSequence();const idx=currentPhaseIndex(seq);if(idx<0)return;if(idx<seq.length-1){jumpToPhase(seq,idx+1)}else{endWorkout()}}
+
+    function stopWorkout(){pauseTimer();resetTimer();backToSetup()}
+    function startWorkout(){currentConfig=getFormConfig();if(currentConfig.numTypes<1||currentConfig.numRepsPerType<1){alert('Number of types and reps must be at least 1');return}timerState.elapsedSeconds=0;timerState.currentTypeIdx=0;timerState.currentRepIdx=0;timerState.currentPhase='work';timerState.phaseRemaining=currentConfig.workTime;document.getElementById('setup-screen').style.display='none';const timerScreen=document.getElementById('timer-screen');timerScreen.style.display='flex';document.getElementById('timer-workout-name').textContent=currentConfig.workoutName;updateTimerUI()}
+    function backToSetup(){document.getElementById('timer-screen').style.display='none';document.getElementById('setup-screen').style.display='block';pauseTimer()}
+    function showAbout(){document.getElementById('about-modal').style.display='flex'}
+    function hideAbout(){document.getElementById('about-modal').style.display='none'}
+
+    function init(){try{const saved=localStorage.getItem('workoutConfigs');if(saved){savedWorkouts=JSON.parse(saved)}renderSavedList();document.getElementById('load-file-input').addEventListener('change',handleFileLoad);updateTypesList();updateTotalTime();console.log('%c✅ Workout Timer ready (mobile-responsive)', 'background:#10b981;color:#fff;padding:2px 6px;border-radius:4px;font-size:12px')}catch(err){console.error('Workout Timer init error:',err);alert('⚠️ There was a problem starting the timer.\n\nPlease refresh the page.')}}
+    init()
+  </script>
 </body>
 </html>
