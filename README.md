@@ -74,23 +74,14 @@ The **Total workout time** updates instantly.
 - ✅ Safari (iOS & macOS)
 - ✅ Firefox
 
-## 📄 License
 
-MIT License — feel free to use, modify, and share!
+MIT License — feel free to share!
 
 ## 👨‍💻 Made with ❤️
 
 Built as a fun, practical fitness tool.  
 If you enjoy it, star the repo or share it with your gym buddies!
 
----
-
-**Would you like me to also create:**
-- A shorter version for GitHub?
-- A version with installation instructions for GitHub Pages?
-- Or add contribution guidelines?
-
-Just say the word and I’ll tweak it instantly! 💪
 
 ## Live App
 
