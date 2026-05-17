@@ -1,6 +1,6 @@
 # 🏋️ Workout Timer
 
-**A , fully responsive single-file workout timer** built for quick circuit training.  
+**A fully responsive single-file workout timer** built for quick circuit training.  
 
 Customize your workout, save presets, and get automatic beep + voice countdowns in the last 5 seconds of every work and rest interval. Works perfectly on phones, tablets, and desktop — no install required.
 
