@@ -4,8 +4,6 @@
 
 Customize your workout, save presets, and get automatic beep + voice countdowns in the last 5 seconds of every work and rest interval. Works perfectly on phones, tablets, and desktop — no install required.
 
-![Workout Timer Preview](https://via.placeholder.com/800x600/10b981/ffffff?text=Workout+Timer+Screenshot)  
-*(Replace with actual screenshot when you add one)*
 
 ## ✨ Features
 
